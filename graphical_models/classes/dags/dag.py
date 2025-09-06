@@ -2212,11 +2212,14 @@ class DAG:
             # for node in latent_nodes:
             #     ag.remove_node(node, ignore_error=True)
 
+            base_ag = AncestralGraph(nodes=self._nodes, directed=self._arcs)
             ag = AncestralGraph(nodes=self._nodes, directed=self._arcs)
-            ancestor_dict = ag.ancestor_dict()
+            ancestor_dict = base_ag.ancestor_dict()
+            
             for i, j in itr.combinations(self._nodes - latent_nodes, 2):
                 S = (ancestor_dict[i] | ancestor_dict[j]) - {i, j} - latent_nodes
-                if not ag.has_any_edge(i, j) and not ag.msep(i, j, S):
+            
+                if not ag.has_any_edge(i, j) and not base_ag.msep(i, j, S):
                     if i in ancestor_dict[j]:
                         ag._add_directed(i, j)
                     elif j in ancestor_dict[i]:
